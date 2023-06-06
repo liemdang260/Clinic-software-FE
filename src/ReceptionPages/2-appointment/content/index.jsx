@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { dateMap, dayLength } from "_constants/date";
+import { dateMap, dateParse, dayLength } from "_constants/date";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowBackIosNew, ArrowForwardIos, Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
@@ -14,6 +14,8 @@ import {
   // rows,
   examineType,
 } from "_constants/FakeData/AppointmentRequest";
+import { useDispatch } from "react-redux";
+import { createAppointment as createAppointmentAction } from "_app/appointment/appointmentSlice";
 import "./index.scss";
 // import { Scrollbars } from 'react-custom-scrollbars-2';
 
@@ -22,9 +24,12 @@ function Content(props) {
   const [dayActive, setDayActive] = useState(new Date(Date.now()));
   const [rendereDate, setRenderedDate] = useState(new Date(Date.now()));
   const [openForm, setOpenForm] = useState(false);
+
+  const dispatch = useDispatch();
+
   const filteredData = props.data.filter(
     (appointment) =>
-      compare2Days(new Date(appointment.TIMES), dayActive) === true
+      compare2Days(new Date(appointment.TIMES), dayActive) === true,
   );
   const afterHandledData = filteredData.map((data, index) => {
     return {
@@ -36,16 +41,24 @@ function Content(props) {
       ).slice(-2)}:${(
         "0" + new Date(data.TIMES.toString().slice(0, 21)).getMinutes()
       ).slice(-2)}`,
-      room: data.EMPLOYEE_NAME,      
+      room: data.EMPLOYEE_NAME,
       state: 0,
       type: data.TYPE,
     };
   });
-  console.log(filteredData);
-  const [selectId, setSelectId] = useState(afterHandledData[0]?.id || '');
+  // console.log(filteredData);
+  const [selectId, setSelectId] = useState(afterHandledData[0]?.id || "");
   // SUBMIT DATA
   const handleSubmit = (value) => {
-    console.log(value);
+    value.appointment.time.date = dateParse(
+      new Date(value.appointment.time.date),
+    );
+
+    value.patient.date_of_birth = dateParse(
+      new Date(value.patient.date_of_birth),
+    );
+
+    dispatch(createAppointmentAction(value));
   };
   //
   const handleClose = (e) => {
@@ -55,7 +68,7 @@ function Content(props) {
   const dates = [];
   for (let i = 0; i <= 6; i++) {
     dates.push(
-      new Date(anchorDay.getTime() + (i - anchorDay.getDay()) * dayLength)
+      new Date(anchorDay.getTime() + (i - anchorDay.getDay()) * dayLength),
     );
   }
   const dayActiveChange = (date) => {
@@ -81,9 +94,9 @@ function Content(props) {
           <input type="text" placeholder="Tìm Kiếm" />
         </div>
         <div className="month">
-          <h4>{`${
-            rendereDate.getMonth() + 1
-          }/${rendereDate.getFullYear()}`}</h4>
+          <h4>
+            {`${rendereDate.getMonth() + 1}/${rendereDate.getFullYear()}`}
+          </h4>
           <FontAwesomeIcon
             icon="chevron-circle-left"
             className="chevron-circle-left-icon"
@@ -108,6 +121,7 @@ function Content(props) {
         <div className="dates">
           {dates.map((date, index) => (
             <div
+              key={index}
               className={
                 (compare2Days(date, dayActive)
                   ? "date--active"
@@ -115,7 +129,7 @@ function Content(props) {
                   ? "today"
                   : "date") +
                 (props.data.filter(
-                  (d) => compare2Days(new Date(d.TIMES), date) === true
+                  (d) => compare2Days(new Date(d.TIMES), date) === true,
                 ).length > 0
                   ? " dot-notify"
                   : "")

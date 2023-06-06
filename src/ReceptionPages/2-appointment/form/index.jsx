@@ -105,14 +105,12 @@ function AppointmentForm({ open, handleClose, handleSubmit }) {
   // const [oldCustomer, setOldCustomer] = useState(false);
   const handleSubmitForm = (value) => {
     const p = province.find(
-      (item) => item.value == value.patient.address.province
+      (item) => item.value == value.patient.address.province,
     ).key;
     const d = district.find(
-      (item) => item.value == value.patient.address.district
+      (item) => item.value == value.patient.address.district,
     ).key;
-    const w = ward.find(
-      (item) => item.value == value.patient.address.ward
-    ).key;
+    const w = ward.find((item) => item.value == value.patient.address.ward).key;
     const det = value.patient.address.details;
     const handledValue = {
       ...value,

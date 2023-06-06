@@ -18,8 +18,8 @@ export const Date = ({ form, field, label, required, ...rest }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DatePicker     
-        inputFormat="dd/MM/yyyy" 
+      <DatePicker
+        inputFormat="dd/MM/yyyy"
         label={label}
         size="small"
         value={field.value}
@@ -32,7 +32,7 @@ export const Date = ({ form, field, label, required, ...rest }) => {
             <TextField
               sx={{
                 "& label+.MuiInputBase-root": { marginTop: "8px !important" },
-                "& label": {top: '-15%', fontSize: 14},
+                "& label": { top: "-15%", fontSize: 14 },
                 "& .MuiFormLabel-asterisk": { color: "red" },
               }}
               size="small"
